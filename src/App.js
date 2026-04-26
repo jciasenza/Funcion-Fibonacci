@@ -3,39 +3,101 @@ import './App.css';
 import { useState } from "react"
 
 function App() {
-  const [resultado, setResultado] = useState([]);
+  const [numero, setNumero] = useState('');
+  const [resultado, setResultado] = useState(null);
   const [mostrarOcultar, setMostrarOcultar] = useState(false);
 
-  const fibonacci = (num) => {
-    const f = [0, 1];
+  const calcularFibonacci = (num) => {
+    const n = parseInt(num);
+    if (isNaN(n) || n < 0) return null;
 
-    for (let i = 2; i <= num; i++) {
-      f[i] = f[i - 1] + f[i - 2]
-      setResultado(f[num]);
+    if (n === 0) return 0;
+    if (n === 1) return 1;
+
+    let a = 0, b = 1;
+    for (let i = 2; i <= n; i++) {
+      const temp = a + b;
+      a = b;
+      b = temp;
     }
-  }
-  const mostrar = () => {
+    return b;
+  };
+
+  const handleInputChange = (e) => {
+    const value = e.target.value;
+    setNumero(value);
+    const fibResult = calcularFibonacci(value);
+    setResultado(fibResult);
+  };
+
+  const toggleMostrar = () => {
     setMostrarOcultar(!mostrarOcultar);
-    document.getElementById("input").value = ""
-    return <div>{resultado}</div>
-  }
+  };
+
+  const handleBorrar = () => {
+    setNumero('');
+    setResultado(null);
+    setMostrarOcultar(false);
+  };
 
   return (
-    <>
-      <h1 className="titulo">Funcion Fibonacci</h1>
-      <p>La Funcion Fibonacci se trata de una secuencia infinita de numeros naturales</p>
-      <p>f (n) = f (n-1) + f (n-2)</p>
-      <p><b>Realizado por Juan Carlos Iasenza</b></p>
-      <br />
-      <input className="numero" id="input" placeholder='Ingrese un numeo' type="text" onChange={e => fibonacci(e.target.value)} />
-
-      <button className="boton" onClick={() => mostrar()}>
-        {mostrarOcultar ? `Borrar` : `Mostrar`}
-      </button>
-      <div className={mostrarOcultar ? "show-element" : null}>
-        {mostrarOcultar && <h3>{resultado}</h3>}
+    <div className="app-container">
+      <div className="hero-section">
+        <h1 className="titulo">Función Fibonacci</h1>
+        <div className="subtitle">
+          <p>La secuencia infinita de números naturales donde cada término es la suma de los dos anteriores</p>
+          <p className="formula">f(n) = f(n-1) + f(n-2)</p>
+        </div>
       </div>
-    </>
+
+      <div className="calculator-section">
+        <div className="input-group">
+          <label htmlFor="fibonacci-input" className="input-label">
+            Ingrese un número (n ≥ 0):
+          </label>
+          <input
+            id="fibonacci-input"
+            className="numero"
+            placeholder="Ej: 10"
+            type="number"
+            min="0"
+            value={numero}
+            onChange={handleInputChange}
+          />
+        </div>
+
+        <div className="button-group">
+          <button
+            className="boton mostrar"
+            onClick={toggleMostrar}
+            disabled={!numero || resultado === null}
+          >
+            {mostrarOcultar ? '🔽 Ocultar Resultado' : '🔍 Mostrar Resultado'}
+          </button>
+          <button className="boton borrar" onClick={handleBorrar}>
+            🗑️ Borrar
+          </button>
+        </div>
+
+        {mostrarOcultar && resultado !== null && (
+          <div className="resultado-container">
+            <div className="resultado-card">
+              <h3 className="resultado-titulo">Resultado</h3>
+              <div className="resultado-valor">
+                f({numero}) = <span className="numero-resultado">{resultado}</span>
+              </div>
+              <p className="resultado-descripcion">
+                El {numero}º número de Fibonacci es: <strong>{resultado}</strong>
+              </p>
+            </div>
+          </div>
+        )}
+      </div>
+
+      <footer className="footer">
+        <p><strong>Realizado por Juan Carlos Iasenza</strong></p>
+      </footer>
+    </div>
   );
 }
 
